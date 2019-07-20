@@ -29,7 +29,7 @@ export const ALL_HOUSES_QUERY=gql`
 `
 
 export const ACCOUNT_CREATION = gql`
-mutation signup($email:String!,$password:String!,$firstName:String!,$lastName:String!,$phone1:String!,$profilePicture:String!){
+mutation signup($email:String!,$password:String!,$firstName:String!,$lastName:String!,$phone1:String!,$profilePicture:String){
   signup(email:$email,password:$password,firstName:$firstName,lastName:$lastName,phone1:$phone1,profilePicture:$profilePicture){
   token
   user{

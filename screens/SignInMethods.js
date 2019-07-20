@@ -85,7 +85,7 @@ class SignInMethods extends React.Component {
                         <Icon name="arrow-back" />
                     </Button>
                 </View>
-                <View style={style.view}>
+                 <View style={style.view}>
                     <View style={style.illustrationContainer}>
                         <Image source={require('../images/illustration.png')} />
                     </View>
@@ -99,11 +99,23 @@ class SignInMethods extends React.Component {
                             </Button>
                         </View>
                         <LoginButton
-                            onLoginFinished={(error, data) => {
-                                Alert.alert(JSON.stringify(error || data, null, 2));
-                            }}
-                        />
-                        <View style={style.accountCreationAndLoginContainer}>
+                            onLoginFinished={
+                                (error, result) => {
+                                    if (error) {
+                                        console.log("login has error: " + result.error);
+                                    } else if (result.isCancelled) {
+                                        console.log("login is cancelled.");
+                                    } else {
+                                        AccessToken.getCurrentAccessToken().then(
+                                            (data) => {
+                                                console.log(data.accessToken.toString())
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                            onLogoutFinished={() => console.log("logout.")} />
+                         <View style={style.accountCreationAndLoginContainer}>
                             <Button onPress={() => navigate('SignIn')} style={style.loginButton}>
                                 <Text style={{ color: "black" }} >
                                     MWEN GEN ON KONT
@@ -115,8 +127,8 @@ class SignInMethods extends React.Component {
                                 </Text>
                             </Button>
                         </View>
-                    </View>
-                </View>
+                     </View>
+                </View> 
             </Container>
         )
     }

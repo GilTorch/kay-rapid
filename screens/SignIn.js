@@ -13,18 +13,18 @@ import {
     Label,
     Spinner
 } from 'native-base';
-import { Mutation,compose,graphql } from 'react-apollo';
+import { Mutation, compose, graphql } from 'react-apollo';
 import { View, TouchableOpacity } from 'react-native';
 import * as yup from 'yup';
 import { Formik } from 'formik';
 import { ToastAndroid } from 'react-native';
 import { successColor, mainColor } from '../utils/theme';
-import { AUTH_WITHOUT_SOCIAL_MEDIA,WRITE_AUTH_INFO } from '../queries/queries';
+import { AUTH_WITHOUT_SOCIAL_MEDIA, WRITE_AUTH_INFO } from '../queries/queries';
 
 const style = {
     label: {
         color: 'rgba(102, 45, 145,1)',
-        fontFamily:'EncodeSansCondensed-Regular'
+        fontFamily: 'EncodeSansCondensed-Regular'
     },
     icon: {
         color: 'rgba(102, 45, 145, 1)',
@@ -108,7 +108,7 @@ class SignIn extends React.Component {
     }
 
     render() {
-        const { writeUserAuthInfoToCache, navigation:{ navigate } } = this.props;
+        const { writeUserAuthInfoToCache, navigation: { navigate } } = this.props;
         const { password } = this.state;
 
         return (
@@ -140,10 +140,10 @@ class SignIn extends React.Component {
                                     writeUserAuthInfoToCache({ variables: { userAuthInfo: userObject } });
                                 }
                             }).then(() => {
-                                        navigate("Profile")
-                                     })
-                                     .catch((err) => console.log(err))
-                            
+                                navigate("Profile")
+                            })
+                                .catch((err) => console.log(err))
+
                             setSubmitting(false);
                         }}
                     >
@@ -161,12 +161,12 @@ class SignIn extends React.Component {
                                     <Card style={style.card}>
                                         <Form style={style.form}>
                                             <CardItem>
+                                                <Label style={style.label}><Icon name="mail" style={style.icon} /> Rantre imel ou</Label>
                                                 <Item
                                                     success={!errors.email && touched.email}
-                                                    floatingLabel={true}
+                                                    // floatingLabel={true}
                                                     error={errors.email !== undefined && touched.email}
                                                 >
-                                                    <Label style={style.label}><Icon name="mail" style={style.icon} /> Rantre imel ou</Label>
                                                     <Input
                                                         onChangeText={handleChange('email')}
                                                         onBlur={handleBlur('email')}
@@ -179,28 +179,31 @@ class SignIn extends React.Component {
                                                 {errors.email && touched.email && <Text style={{ color: 'red' }}>{errors.email}</Text>}
                                             </CardItem>
                                             <CardItem>
-                                                <Item
-                                                    floatingLabel
-                                                    success={!errors.password && touched.password}
-                                                    error={errors.password !== undefined && touched.password}
-                                                >
+                                                <View>
                                                     <Label style={style.label}><Icon name="lock" style={style.icon} /> Rantre modpas ou</Label>
-                                                    <Input
-                                                        secureTextEntry={password.hidden}
-                                                        onChangeText={handleChange('password')}
-                                                        onBlur={handleBlur('password')}
-                                                        value={values.password}
-                                                    />
-                                                    <Icon name={password.icon} type="FontAwesome" style={style.icon} onPress={() => this.handlePasswordVisible("password")} />
-                                                    {this.failureSuccessIcon("password", touched, errors)}
-                                                </Item>
+                                                    <Item
+                                                        regular
+                                                        // floatingLabel
+                                                        success={!errors.password && touched.password}
+                                                        error={errors.password !== undefined && touched.password}
+                                                    >
+                                                        <Input
+                                                            secureTextEntry={password.hidden}
+                                                            onChangeText={handleChange('password')}
+                                                            onBlur={handleBlur('password')}
+                                                            value={values.password}
+                                                        />
+                                                        <Icon name={password.icon} type="FontAwesome" style={style.icon} onPress={() => this.handlePasswordVisible("password")} />
+                                                        {this.failureSuccessIcon("password", touched, errors)}
+                                                    </Item>
+                                                </View>
                                             </CardItem>
                                             <CardItem>
                                                 {errors.email && touched.email && <Text style={{ color: 'red' }}>{errors.password}</Text>}
                                             </CardItem>
                                             <CardItem footer style={style.cardFooter}>
                                                 <Content>
-                                                    <Button disabled={loading} style={style.button} color="#eee" onPress={handleSubmit} success={loading===false} light={loading} block>
+                                                    <Button disabled={loading} style={style.button} color="#eee" onPress={handleSubmit} success={loading === false} light={loading} block>
                                                         <Text>
                                                             Soumèt
                                                         </Text>
