@@ -76,6 +76,9 @@ const style = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    formGroup: {
+        flex: 1
     }
 })
 
@@ -169,7 +172,7 @@ class SignUp extends React.Component {
     render() {
         const { navigate } = this.props.navigation;
         let { password, passwordConfirm, profilePicture } = this.state;
-        const { signIn, writeUserAuthInfoToCache } = this.props;
+        const { writeUserAuthInfoToCache } = this.props;
 
         return (
             <Mutation mutation={ACCOUNT_CREATION}>
@@ -186,47 +189,43 @@ class SignUp extends React.Component {
                         }}
                         onSubmit={async (values, { setSubmitting }) => {
                             setSubmitting(true)
-                            if (profilePicture!==null) {
-                                console.log("THERE IS A PROFILE PICTURE");
+                            if (profilePicture !== null) {
                                 await uploadImage([profilePicture], "profilePicture", (label, response) => {
                                     profilePicture = response.secure_url;
                                 })
-                            }else{
-                                console.log("THERE ARE NO PROFILE PICTURE");
-                                profilePicture="https://res.cloudinary.com/dejyp5iex/image/upload/v1535152859/negre-marron_ndndgz.jpg";
-                            }
+                            } 
 
                             signup({
-                               variables: { 
-                                            email: values.email, 
-                                            password: values.password, 
-                                            firstName: values.firstName, 
-                                            lastName: values.lastName, 
-                                            phone1: values.phone1, 
-                                            profilePicture
-                                        },
+                                variables: {
+                                    email: values.email,
+                                    password: values.password,
+                                    firstName: values.firstName,
+                                    lastName: values.lastName,
+                                    phone1: values.phone1,
+                                    profilePicture
+                                },
                                 update: (store, { data: { signup } }) => {
-                                    signIn({
-                                        variables: { email: values.email, password: values.password },
-                                        update: (store, { data: { login } }) => {
-                                            let userObject = {
-                                                __typename: "UserAuthInfo",
-                                                id: login.user.id,
-                                                token: login.token,
-                                                firstName: login.user.firstName,
-                                                lastName: login.user.lastName,
-                                                email: login.user.email,
-                                                profilePicture: login.user.profilePicture.url
-                                            };
-                                            setSubmitting(false)
-                                            writeUserAuthInfoToCache({ variables: { userAuthInfo: userObject } });
-                                        }
-                                    }).then(() => {
-                                                navigate("Profile")
-                                             })
-                                             .catch((err) => console.log(err))
+
+                                    const profilePicture = !signup.user.profilePicture ? null : signup.user.profilePicture.url; 
+
+                                    let userObject = {
+                                        __typename: "UserAuthInfo",
+                                        id: signup.user.id,
+                                        token: signup.token,
+                                        firstName: signup.user.firstName,
+                                        lastName: signup.user.lastName,
+                                        email: signup.user.email,
+                                        profilePicture
+                                    };
+                                    setSubmitting(false)
+                                    writeUserAuthInfoToCache({ variables: { userAuthInfo: userObject } })
+                                    .then(() => {
+                                        navigate("Profile")
+                                    }).catch((err) => console.log(err))
                                 }
-                           })
+                            }).then(
+                                setSubmitting(false)
+                            )
                         }}
                     >
                         {({
@@ -265,125 +264,136 @@ class SignUp extends React.Component {
                                                 )}
                                             </CardItem>
                                             <CardItem>
-                                                <Item
-                                                    success={!errors.lastName && touched.lastName}
-                                                    floatingLabel={true}
-                                                    error={errors.lastName !== undefined && touched.lastName}
-                                                >
+                                                <View style={style.formGroup}>
                                                     <Label style={style.label}><Icon name="person" style={style.icon} /> Rantre Siyati'w</Label>
-                                                    <Input
-                                                        onChangeText={handleChange('lastName')}
-                                                        onBlur={handleBlur('lastName')}
-                                                        value={values.lastName}
-                                                    />
-                                                    {this.failureSuccessIcon("lastName", touched, errors)}
-                                                </Item>
+                                                    <Item
+                                                        success={!errors.lastName && touched.lastName}
+
+                                                        error={errors.lastName !== undefined && touched.lastName}
+                                                    >
+                                                        <Input
+                                                            onChangeText={handleChange('lastName')}
+                                                            onBlur={handleBlur('lastName')}
+                                                            value={values.lastName}
+                                                        />
+                                                        {this.failureSuccessIcon("lastName", touched, errors)}
+                                                    </Item>
+                                                </View>
                                             </CardItem>
                                             <CardItem>
                                                 {errors.lastName && touched.lastName && <Text style={{ color: 'red' }}>{errors.lastName}</Text>}
                                             </CardItem>
                                             <CardItem>
-                                                <Item
-                                                    success={!errors.firstName && touched.firstName}
-                                                    floatingLabel={true}
-                                                    error={errors.firstName !== undefined && touched.firstName}
-                                                >
+                                                <View style={style.formGroup}>
                                                     <Label style={style.label}><Icon name="person" style={style.icon} /> Rantre Non'w</Label>
-                                                    <Input
-                                                        onChangeText={handleChange('firstName')}
-                                                        onBlur={handleBlur('firstName')}
-                                                        value={values.firstName}
-                                                    />
-                                                    {this.failureSuccessIcon("firstName", touched, errors)}
-                                                </Item>
+                                                    <Item
+                                                        success={!errors.firstName && touched.firstName}
+
+                                                        error={errors.firstName !== undefined && touched.firstName}
+                                                    >
+                                                        <Input
+                                                            onChangeText={handleChange('firstName')}
+                                                            onBlur={handleBlur('firstName')}
+                                                            value={values.firstName}
+                                                        />
+                                                        {this.failureSuccessIcon("firstName", touched, errors)}
+                                                    </Item>
+                                                </View>
                                             </CardItem>
                                             <CardItem>
                                                 {errors.firstName && touched.firstName && <Text style={{ color: 'red' }}>{errors.firstName}</Text>}
                                             </CardItem>
                                             <CardItem>
-                                                <Item
-                                                    success={!errors.phone1 && touched.phone1}
-                                                    floatingLabel={true}
-                                                    error={errors.phone1 !== undefined && touched.phone1}
-                                                >
+                                                <View style={style.formGroup}>
                                                     <Label style={style.label}><Icon name="phone" type="FontAwesome" style={style.icon} /> Rantre Nimewo Telefòn ou</Label>
-                                                    <Input
-                                                        onChangeText={handleChange('phone1')}
-                                                        onBlur={handleBlur('phone1')}
-                                                        value={values.phone1}
-                                                    />
-                                                    {this.failureSuccessIcon("phone1", touched, errors)}
-                                                </Item>
+                                                    <Item
+                                                        success={!errors.phone1 && touched.phone1}
+
+                                                        error={errors.phone1 !== undefined && touched.phone1}
+                                                    >
+                                                        <Input
+                                                            onChangeText={handleChange('phone1')}
+                                                            onBlur={handleBlur('phone1')}
+                                                            value={values.phone1}
+                                                        />
+                                                        {this.failureSuccessIcon("phone1", touched, errors)}
+                                                    </Item>
+                                                </View>
                                             </CardItem>
                                             <CardItem>
                                                 {errors.phone1 && touched.phone1 && <Text style={{ color: 'red' }}>{errors.phone1}</Text>}
                                             </CardItem>
                                             <CardItem>
-                                                <Item
-                                                    style={{ flexDirection: 'row' }}
-                                                    success={!errors.email && touched.email}
-                                                    floatingLabel={true}
-                                                    error={errors.email !== undefined && touched.email}
-                                                >
+                                                <View style={style.formGroup}>
                                                     <Label style={style.label}><Icon name="mail" style={style.icon} /> Rantre Imel ou</Label>
-                                                    <Input
-                                                        onChangeText={handleChange('email')}
-                                                        onBlur={handleBlur('email')}
-                                                        value={values.email}
-                                                    />
-                                                    {this.failureSuccessIcon("email", touched, errors)}
-                                                </Item>
+                                                    <Item
+                                                        style={{ flexDirection: 'row' }}
+                                                        success={!errors.email && touched.email}
+
+                                                        error={errors.email !== undefined && touched.email}
+                                                    >
+                                                        <Input
+                                                            onChangeText={handleChange('email')}
+                                                            onBlur={handleBlur('email')}
+                                                            value={values.email}
+                                                        />
+                                                        {this.failureSuccessIcon("email", touched, errors)}
+                                                    </Item>
+                                                </View>
                                             </CardItem>
                                             <CardItem>
                                                 {errors.email && touched.email && <Text style={{ color: 'red' }}>{errors.email}</Text>}
                                             </CardItem>
                                             <CardItem>
-                                                <Item
-                                                    floatingLabel
-                                                    success={!errors.password && touched.password}
-                                                    error={errors.password !== undefined && touched.password}
-                                                >
+                                                <View style={style.formGroup}>
                                                     <Label style={style.label}><Icon name="lock" style={style.icon} /> Rantre modpas ou</Label>
-                                                    <Input
-                                                        secureTextEntry={password.hidden}
-                                                        onChangeText={handleChange('password')}
-                                                        onBlur={handleBlur('password')}
-                                                        value={values.password}
-                                                    />
-                                                    <Icon name={password.icon} type="FontAwesome" style={style.icon} onPress={() => this.handlePasswordVisible("password")} />
-                                                    {this.failureSuccessIcon("password", touched, errors)}
-                                                </Item>
+                                                    <Item
+                                                        success={!errors.password && touched.password}
+                                                        error={errors.password !== undefined && touched.password}
+                                                    >
+                                                        <Input
+                                                            secureTextEntry={password.hidden}
+                                                            onChangeText={handleChange('password')}
+                                                            onBlur={handleBlur('password')}
+                                                            value={values.password}
+                                                        />
+                                                        <Icon name={password.icon} type="FontAwesome" style={style.icon} onPress={() => this.handlePasswordVisible("password")} />
+                                                        {this.failureSuccessIcon("password", touched, errors)}
+                                                    </Item>
+                                                </View>
                                             </CardItem>
                                             <CardItem>
                                                 {errors.password && touched.password && <Text style={{ color: 'red' }}>{errors.password}</Text>}
                                             </CardItem>
                                             <CardItem>
-                                                <Item
-                                                    floatingLabel
-                                                    success={!errors.passwordConfirm && touched.passwordConfirm}
-                                                    error={errors.passwordConfirm !== undefined && touched.passwordConfirm}
-                                                >
+                                                <View style={style.formGroup}>
                                                     <Label style={style.label}><Icon name="lock" style={style.icon} /> Konfime Modpas ou chwazi a</Label>
-                                                    <Input
-                                                        secureTextEntry={passwordConfirm.hidden}
-                                                        onChangeText={handleChange('passwordConfirm')}
-                                                        onBlur={handleBlur('passwordConfirm')}
-                                                        value={values.passwordConfirm}
-                                                    />
-                                                    <Icon name={passwordConfirm.icon} type="FontAwesome" style={style.icon} onPress={() => this.handlePasswordVisible("passwordConfirm")} />
-                                                    {this.failureSuccessIcon("passwordConfirm", touched, errors)}
-                                                </Item>
+                                                    <Item
+
+                                                        success={!errors.passwordConfirm && touched.passwordConfirm}
+                                                        error={errors.passwordConfirm !== undefined && touched.passwordConfirm}
+                                                    >
+                                                        <Input
+                                                            secureTextEntry={passwordConfirm.hidden}
+                                                            onChangeText={handleChange('passwordConfirm')}
+                                                            onBlur={handleBlur('passwordConfirm')}
+                                                            value={values.passwordConfirm}
+                                                        />
+                                                        <Icon name={passwordConfirm.icon} type="FontAwesome" style={style.icon} onPress={() => this.handlePasswordVisible("passwordConfirm")} />
+                                                        {this.failureSuccessIcon("passwordConfirm", touched, errors)}
+                                                    </Item>
+                                                </View>
                                             </CardItem>
                                             <CardItem>
                                                 {errors.passwordConfirm && touched.passwordConfirm && <Text style={{ color: 'red' }}>{errors.passwordConfirm}</Text>}
                                             </CardItem>
                                             <CardItem footer style={style.cardFooter}>
                                                 <Content>
-                                                    <Button disabled={loading} onPress={handleSubmit} success={loading === false} light={loading} block>
+                                                    <Button disabled={isSubmitting} onPress={handleSubmit} success={isSubmitting === false} light={isSubmitting} block>
                                                         <Text>
                                                             Kreye
                                                         </Text>
-                                                        {loading && <Spinner color="white" />}
+                                                        {isSubmitting && <Spinner color="white" />}
                                                     </Button>
                                                 </Content>
                                             </CardItem>
@@ -406,7 +416,6 @@ class SignUp extends React.Component {
 
 
 export default compose(
-    graphql(AUTH_WITHOUT_SOCIAL_MEDIA, { name: "signIn" }),
     graphql(WRITE_AUTH_INFO, { name: "writeUserAuthInfoToCache" })
 )(SignUp);
 

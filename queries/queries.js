@@ -34,10 +34,16 @@ mutation signup($email:String!,$password:String!,$firstName:String!,$lastName:St
   token
   user{
     id
+    email 
+    firstName
+    lastName 
+    profilePicture {
+      url
+    }
   }
   }
 }
-` 
+`
 
 export const REQUEST_PASSWORD_TOKEN=gql`
   mutation requestPWResetToken($email:String!){
