@@ -36,6 +36,9 @@ const style = {
     view: {
         flex: 1,
     },
+    formGroup:{
+        flex: 1
+    },
     forgetPasswordButton: {
         backgroundColor: successColor,
         flex: 1,
@@ -161,29 +164,28 @@ class SignIn extends React.Component {
                                     <Card style={style.card}>
                                         <Form style={style.form}>
                                             <CardItem>
-                                                <Label style={style.label}><Icon name="mail" style={style.icon} /> Rantre imel ou</Label>
-                                                <Item
-                                                    success={!errors.email && touched.email}
-                                                    // floatingLabel={true}
-                                                    error={errors.email !== undefined && touched.email}
-                                                >
-                                                    <Input
-                                                        onChangeText={handleChange('email')}
-                                                        onBlur={handleBlur('email')}
-                                                        value={values.email}
-                                                    />
-                                                    {this.failureSuccessIcon("email", touched, errors)}
-                                                </Item>
+                                                <View style={style.formGroup}>
+                                                    <Label style={style.label}><Icon name="mail" style={style.icon} /> Rantre imel ou</Label>
+                                                    <Item
+                                                        success={!errors.email && touched.email}
+                                                        error={errors.email !== undefined && touched.email}
+                                                    >
+                                                        <Input
+                                                            onChangeText={handleChange('email')}
+                                                            onBlur={handleBlur('email')}
+                                                            value={values.email}
+                                                        />
+                                                        {this.failureSuccessIcon("email", touched, errors)}
+                                                    </Item>
+                                                </View>
                                             </CardItem>
                                             <CardItem>
                                                 {errors.email && touched.email && <Text style={{ color: 'red' }}>{errors.email}</Text>}
                                             </CardItem>
                                             <CardItem>
-                                                <View>
+                                                <View style={style.formGroup}>
                                                     <Label style={style.label}><Icon name="lock" style={style.icon} /> Rantre modpas ou</Label>
-                                                    <Item
-                                                        regular
-                                                        // floatingLabel
+                                                    <Item                                                       
                                                         success={!errors.password && touched.password}
                                                         error={errors.password !== undefined && touched.password}
                                                     >

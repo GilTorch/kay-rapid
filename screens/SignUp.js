@@ -176,7 +176,7 @@ class SignUp extends React.Component {
 
         return (
             <Mutation mutation={ACCOUNT_CREATION}>
-                {(signup, { loading, error }) => (
+                {(signup, { error }) => (
                     <Formik
                         validationSchema={schema}
                         initialValues={{
