@@ -64,7 +64,7 @@ mutation resetPassword($resetToken:String!,$password:String!,$passwordConfirm:St
 }
 `
 
-export const AUTH_WITHOUT_SOCIAL_MEDIA=gql`
+export const SIGN_IN=gql`
 mutation login($email:String!,$password:String!) {
   login(email:$email,password:$password) {
     token 
@@ -226,7 +226,7 @@ export const HOUSE_CREATION=gql`
   }
 `
 
-export const FB_AUTH = gql`
+export const FB_LOGIN = gql`
 mutation authenticateFBUser($facebookToken:String!) {
 authenticateFBUser(facebookToken:$facebookToken){
   token

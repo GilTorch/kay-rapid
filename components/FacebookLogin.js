@@ -1,8 +1,11 @@
 import React from 'react';
-import { Button,Text,Icon } from 'native-base';
-import { LoginManager,AccessToken } from 'react-native-fbsdk';
+import { Button, Text, Icon, Spinner } from 'native-base';
+import { LoginManager, AccessToken } from 'react-native-fbsdk';
+import { Mutation } from 'react-apollo';
+import { graphql, compose } from 'react-apollo';
+import { FB_LOGIN, WRITE_AUTH_INFO } from '../queries/queries';
 
-style={
+style = {
     facebookConnectButton: {
         flex: 1,
         height: 70,
@@ -18,43 +21,78 @@ style={
 
 class FacebookLogin extends React.Component {
 
-    handleLogin = async () => {
-        console.log("HELLO FACEBOOK LOGIn")
+    state = {
+        disabled: false
+    }
+
+    handleLogin = async (fbLogin) => {
+        const { saveToCache,navigate } = this.props;
+
+        this.setState({
+            disabled: true
+        })
+
         try {
             const result = await LoginManager.logInWithPermissions([
                 'public_profile',
                 'email'
             ]);
 
-            if(result.isCancelled){
+            if (result.isCancelled) {
                 throw new Error('User cancelled request');
             }
 
             console.log(`Login success with permissions: ${result.grantedPermissions.toString()}`);
 
             const data = await AccessToken.getCurrentAccessToken();
-
-            if(!data){
+            console.log(data);
+            if (!data) {
                 throw new Error("Something went wrong obtaining he users access token");
             }
 
-            console.log(data)
+            fbLogin({
+                variables: { facebookToken: data.accessToken },
+                update: (store, { data: { authenticateFBUser } }) => {
+                    let id = authenticateFBUser.user.id;
+                    let token = authenticateFBUser.token;
+                    let firstName = authenticateFBUser.user.firstName;
+                    let lastName = authenticateFBUser.user.lastName;
+                    let email = authenticateFBUser.user.email;
+                    let profilePicture = authenticateFBUser.user.profilePicture.url;
+                    let userObject = { __typename: "UserAuthInfo", id, token, firstName, lastName, email, profilePicture };
 
-        }catch(e){
+                    saveToCache({ variables: { userAuthInfo: userObject } })
+                        .then(() => {
+                            this.setState({
+                                disabled: false
+                            })
+                            navigate('Profile')
+                        })
+                        .catch((e) => console.error(e));
+                }
+            })
+
+        } catch (e) {
             console.error(e);
         }
     }
 
     render() {
         return (
-            <Button style={style.facebookConnectButton} onPress={() => this.handleLogin()}>
-                <Icon name="facebook" type="FontAwesome" style={style.facebookConnectButton.text} />
-                <Text style={style.facebookConnectButton.text}>
-                    KONEKTE PA FACEBOOK
-                </Text>
-            </Button >
+            <Mutation mutation={FB_LOGIN}>{(fbLogin, { loading, error }) => (
+                <Button disabled={loading} light={loading} style={style.facebookConnectButton} onPress={() => this.handleLogin(fbLogin)}>
+                    {error && ToastAndroid.show(`${error}`, ToastAndroid.SHORT)}
+                    <Icon name="facebook" type="FontAwesome" style={style.facebookConnectButton.text} />
+                    <Text style={style.facebookConnectButton.text}>
+                       { loading ? "Pran on ti pasyans..." : "KONEKTE PA FACEBOOK" }
+                    </Text>
+                    {loading && <Spinner color="white" />}
+                </Button >
+            )}</Mutation>
         )
     }
 }
 
-export default FacebookLogin;
+export default compose(
+    graphql(WRITE_AUTH_INFO, { name: "saveToCache" }),
+)(FacebookLogin);

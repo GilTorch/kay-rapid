@@ -81,7 +81,7 @@ class SignInMethods extends React.Component {
                     </View>
                     <View style={style.allButtonsContainer}>
                         <View style={style.facebookConnectButtonContainer}>
-                           <FacebookLogin/>
+                           <FacebookLogin navigate={navigate} />
                         </View>
                          <View style={style.accountCreationAndLoginContainer}>
                             <Button onPress={() => navigate('SignIn')} style={style.loginButton}>

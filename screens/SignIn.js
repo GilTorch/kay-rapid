@@ -19,7 +19,7 @@ import * as yup from 'yup';
 import { Formik } from 'formik';
 import { ToastAndroid } from 'react-native';
 import { successColor, mainColor } from '../utils/theme';
-import { AUTH_WITHOUT_SOCIAL_MEDIA, WRITE_AUTH_INFO } from '../queries/queries';
+import { SIGN_IN, WRITE_AUTH_INFO } from '../queries/queries';
 
 const style = {
     label: {
@@ -115,7 +115,7 @@ class SignIn extends React.Component {
         const { password } = this.state;
 
         return (
-            <Mutation mutation={AUTH_WITHOUT_SOCIAL_MEDIA}>
+            <Mutation mutation={SIGN_IN}>
                 {(login, { loading, error }) => (
 
                     <Formik
