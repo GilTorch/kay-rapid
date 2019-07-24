@@ -2,6 +2,7 @@ import React from 'react';
 import { Container, Text, Button, Icon } from 'native-base';
 import { View, Image, Alert } from 'react-native';
 import { LoginButton, AccessToken } from 'react-native-fbsdk';
+import FacebookLogin from '../components/FacebookLogin';
 
 const style = {
     container: {
@@ -32,17 +33,6 @@ const style = {
         // flex: 1,
         height: 80,
         flexDirection: 'row'
-    },
-    facebookConnectButton: {
-        flex: 1,
-        height: 70,
-        backgroundColor: "#3b5998",
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        text: {
-            color: "white"
-        }
     },
     accountCreationAndLoginContainer: {
         flex: 1,
@@ -91,30 +81,8 @@ class SignInMethods extends React.Component {
                     </View>
                     <View style={style.allButtonsContainer}>
                         <View style={style.facebookConnectButtonContainer}>
-                            <Button style={style.facebookConnectButton} onPress={() => console.log}>
-                                <Icon name="facebook" type="FontAwesome" style={style.facebookConnectButton.text} />
-                                <Text style={style.facebookConnectButton.text}>
-                                    KONEKTE PA FACEBOOK
-                           </Text>
-                            </Button>
+                           <FacebookLogin/>
                         </View>
-                        <LoginButton
-                            onLoginFinished={
-                                (error, result) => {
-                                    if (error) {
-                                        console.log("login has error: " + result.error);
-                                    } else if (result.isCancelled) {
-                                        console.log("login is cancelled.");
-                                    } else {
-                                        AccessToken.getCurrentAccessToken().then(
-                                            (data) => {
-                                                console.log(data.accessToken.toString())
-                                            }
-                                        )
-                                    }
-                                }
-                            }
-                            onLogoutFinished={() => console.log("logout.")} />
                          <View style={style.accountCreationAndLoginContainer}>
                             <Button onPress={() => navigate('SignIn')} style={style.loginButton}>
                                 <Text style={{ color: "black" }} >
